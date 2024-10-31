@@ -1,0 +1,6 @@
+
+.env
+/__pycache__
+links_pages.json
+site_titles_urls.json
+/scripts/__pycache__

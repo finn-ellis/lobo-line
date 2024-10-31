@@ -1,0 +1,11 @@
+requests
+bs4
+openai
+langchain
+langchain-community
+langchain-chroma
+langchain-openai
+python-dotenv
+numpy
+scikit-learn
+tqdm
