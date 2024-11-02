@@ -10,6 +10,20 @@ from tqdm import tqdm
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
+def scrape_page(link):
+    try:
+        response = requests.get(link, timeout=5)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser', parse_only=SoupStrainer(
+            lambda tag, attrs: (
+                tag in ["p", "h1", "h2", "h3", "li", "span", "a"]
+            )
+        ))
+        return soup.get_text(separator=' ', strip=True)
+    except Exception as e:
+        print(f"Failed to retrieve {link}: {e}")
+        return None
+
 def generate_embedding_manifest(sitemap, scrape_pages=False):
     api_key = os.getenv("OPENAI_API_KEY")
     embeddings_model = OpenAIEmbeddings(api_key=api_key)
@@ -35,18 +49,9 @@ def generate_embedding_manifest(sitemap, scrape_pages=False):
                 links.append(f"{site['url']}/{sublink}")
         pages = []
         for link in tqdm(links, desc="Scraping links"):
-            try:
-                response = requests.get(link, timeout=5)
-                response.raise_for_status()
-                soup = BeautifulSoup(response.text, 'html.parser', parse_only=SoupStrainer(
-                    lambda tag, attrs: (
-                        tag in ["p", "h1", "h2", "h3", "li", "span", "a"]
-                    )
-                ))
-                page_content = soup.get_text(separator=' ', strip=True)
+            page_content = scrape_page(link)
+            if page_content:
                 pages.append(page_content)
-            except Exception as e:
-                print(f"Failed to retrieve {link}: {e}")
         # Save zip of links and pages to a json file
         links_pages = [{"link": link, "page": page} for link, page in zip(links, pages)]
         with open('links_pages.json', 'w') as f:
@@ -131,7 +136,11 @@ def write_sitemap():
     except requests.RequestException as e:
         print(f"Error fetching {directory_url}: {e}")
 
+
+
 if __name__ == "__main__":
     # sitemap = write_sitemap()
-    sitemap = load_sitemap()
-    generate_embedding_manifest(sitemap, True)
+    # sitemap = load_sitemap()
+    # generate_embedding_manifest(sitemap, True)
+    test_link = "https://food.unm.edu/locations/hours/fall-2024-hours.html"
+    print(scrape_page(test_link))
