@@ -7,6 +7,7 @@ import os
 from scripts.removebadsublinks import filter_sublinks
 from config import OPENAI_API_KEY
 from tqdm import tqdm
+from urllib.parse import urljoin
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
@@ -14,17 +15,21 @@ def scrape_page(link):
     try:
         response = requests.get(link, timeout=5)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser', parse_only=SoupStrainer(
-            lambda tag, attrs: (
-                tag in ["p", "h1", "h2", "h3", "li", "span", "a"]
-            )
-        ))
+        # soup = BeautifulSoup(response.text, 'html.parser', parse_only=SoupStrainer(
+        #     lambda tag, attrs: (
+        #         tag in ["p", "h1", "h2", "h3", "li", "span", "a"]
+        #     )
+        # ))
+        soup = BeautifulSoup(response.text, 'html.parser')
+        # Remove any navigation divs that may have been parsed
+        for nav in soup.find_all(["div", "a"], {"role": "navigation"}):
+            nav.decompose()
         return soup.get_text(separator=' ', strip=True)
     except Exception as e:
         print(f"Failed to retrieve {link}: {e}")
         return None
 
-def generate_embedding_manifest(sitemap, scrape_pages=False):
+def scrape_pages(sitemap, scrape_pages=False):
     api_key = os.getenv("OPENAI_API_KEY")
     embeddings_model = OpenAIEmbeddings(api_key=api_key)
 
@@ -44,9 +49,12 @@ def generate_embedding_manifest(sitemap, scrape_pages=False):
     else:
         links = []
         for site in sitemap:
-            links.append(site['url'])
+            base_url = site['url']
+            links.append(base_url)
             for sublink in site['sublinks']:
-                links.append(f"{site['url']}/{sublink}")
+                # Use urljoin to properly resolve relative URLs including ../
+                full_url = urljoin(base_url + '/', sublink)
+                links.append(full_url)
         pages = []
         for link in tqdm(links, desc="Scraping links"):
             page_content = scrape_page(link)
@@ -140,7 +148,7 @@ def write_sitemap():
 
 if __name__ == "__main__":
     # sitemap = write_sitemap()
-    # sitemap = load_sitemap()
-    # generate_embedding_manifest(sitemap, True)
-    test_link = "https://food.unm.edu/locations/hours/fall-2024-hours.html"
-    print(scrape_page(test_link))
+    sitemap = load_sitemap()
+    scrape_pages(sitemap, True)
+    # test_link = "https://food.unm.edu/locations/hours/fall-2024-hours.html"
+    # print(scrape_page(test_link))
