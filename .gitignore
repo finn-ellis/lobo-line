@@ -4,3 +4,4 @@
 links_pages.json
 site_titles_urls.json
 /scripts/__pycache__
+chroma_db
