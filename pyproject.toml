@@ -1,0 +1,20 @@
+[project]
+name = "loboline"
+version = "1.0.0"
+description = "2024 UNM App Contest Submission"
+dependencies = [
+    "bs4",
+	"openai",
+	"langchain",
+	"langchain-community",
+	"langchain-chroma",
+	"langchain-openai",
+	"python-dotenv",
+	"tqdm",
+	"flask",
+	"flask-cors",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

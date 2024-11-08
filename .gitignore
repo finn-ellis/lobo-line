@@ -7,3 +7,5 @@ site_titles_urls.json
 chroma_db
 /ignore
 node_modules
+chroma.zip
+.gitignore

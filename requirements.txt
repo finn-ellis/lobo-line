@@ -1,6 +1,4 @@
-requests
 bs4
-json
 openai
 langchain
 langchain-community
