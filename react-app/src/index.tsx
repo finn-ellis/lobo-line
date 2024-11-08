@@ -1,12 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
 
 // https://brand.unm.edu/brand-style/color-palette/index.html
 
@@ -41,7 +38,7 @@ const darkTheme = {
 // Create a GlobalStyle component
 const GlobalStyle = createGlobalStyle`
   body {
-    background-color: ${(props) => props.theme.background};
+    background-color: ${(props) => props.theme.colors.cherry};
     color: ${(props) => props.theme.text};
   }
 `;
