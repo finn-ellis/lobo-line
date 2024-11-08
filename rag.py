@@ -1,9 +1,5 @@
-import json
 import os
-import bs4
 import asyncio
-import requests
-from bs4 import BeautifulSoup, SoupStrainer
 from langchain import hub
 from langchain_chroma import Chroma
 # from langchain_community.document_loaders import WebBaseLoader
@@ -13,7 +9,6 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from config import OPENAI_API_KEY
-from tqdm import tqdm
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
@@ -26,6 +21,15 @@ async def load_documents(loader):
     return docs
 
 def load_db():
+	"""
+    WARNING: This is an expensive operation.
+    
+	Load the database from the JSON file, split the documents into chunks, embed them using OpenAI embeddings, 
+	and persist the vectorstore to disk.
+
+	Returns:
+		vectorstore (Chroma): The vectorstore containing the embedded documents.
+	"""
 	loader = JSONLoader(
 		file_path='links_pages.json',
 		jq_schema='.[]',
@@ -71,7 +75,7 @@ def run_query(query):
     # Retrieve and generate using the relevant snippets of the blog.
     retriever = vectorstore.as_retriever()
     prompt = hub.pull("rlm/rag-prompt")
-    prompt.messages[0].prompt.template = "You are an assistant for information retrieval tasks related to the University of New Mexico. Use the following pieces of retrieved context to respond to the prompt. Only include true information. Use three sentences maximum and keep the answer concise. Include relevant links in your answer.\nPrompt: {question} \nContext: {context} \nAnswer:"
+    prompt.messages[0].prompt.template = "You are an assistant for information retrieval tasks related to the University of New Mexico. Use the following pieces of retrieved context to respond to the prompt. Only include true information. Keep the answer concise and use HTML formatting. Include relevant links in your answer.\nPrompt: {question} \nContext: {context} \nAnswer:"
 
     def format_docs(docs):
         return "\n\n".join(doc.page_content.strip() for doc in docs)
@@ -85,9 +89,10 @@ def run_query(query):
 
     response = rag_chain.invoke(query)
     print(response)
+    return response
 
 if __name__ == "__main__":
     # load_db()
     while True:
         query = input("Enter your query: ")
-        run_query(query)
+        print(run_query(query))

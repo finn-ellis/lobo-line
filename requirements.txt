@@ -1,11 +1,12 @@
 requests
 bs4
+json
 openai
 langchain
 langchain-community
 langchain-chroma
 langchain-openai
 python-dotenv
-numpy
-scikit-learn
 tqdm
+flask
+flask-cors

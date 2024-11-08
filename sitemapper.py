@@ -1,7 +1,6 @@
 import json
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
-from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 import os
 from scripts.removebadsublinks import filter_sublinks
@@ -12,6 +11,17 @@ from urllib.parse import urljoin
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 def scrape_page(link):
+    """Scrape the content of a given webpage and return the text of the page as a string.
+
+    Args:
+        link (str): The URL of the webpage to scrape.
+
+    Returns:
+        str: The content of the webpage as a string, or None if the request fails.
+
+    Raises:
+        Exception: If the request fails or there is another error.
+    """
     try:
         response = requests.get(link, timeout=5)
         response.raise_for_status()
@@ -29,62 +39,64 @@ def scrape_page(link):
         print(f"Failed to retrieve {link}: {e}")
         return None
 
-def scrape_pages(sitemap, scrape_pages=False):
-    api_key = os.getenv("OPENAI_API_KEY")
-    embeddings_model = OpenAIEmbeddings(api_key=api_key)
+def scrape_pages(sitemap):
+    """
+    Scrape the content of a list of links and sublinks and save the results to a file.
 
-    # Generate embeddings for titles
-    # titles = [entry['text'] for entry in sitemap]
-    # embeddings = embeddings_model.embed_documents(titles)
+    Args:
+        sitemap (list): A list of dictionaries with 'text', 'url', and 'sublinks' keys.
+        scrape_pages (bool, optional): Whether to scrape the pages. Defaults to False.
 
-    # TODO: add compatbility for ../ links
-    # TODO: Revise scraping and make sure it's relevant content (food.unm, events, etc.)
-	# TODO: make sure there are no duplicate sublinks
-    # TODO: remove duplicate content / boilerplate from pages (unm headers)
-    if os.path.exists('links_pages.json') and not scrape_pages:
-        with open('links_pages.json', 'r') as f:
-            links_pages = json.load(f)
-        links = [entry['link'] for entry in links_pages]
-        pages = [entry['page'] for entry in links_pages]
-    else:
-        links = []
-        for site in sitemap:
-            base_url = site['url']
-            links.append(base_url)
-            for sublink in site['sublinks']:
-                # Use urljoin to properly resolve relative URLs including ../
-                full_url = urljoin(base_url + '/', sublink)
-                links.append(full_url)
-        pages = []
-        for link in tqdm(links, desc="Scraping links"):
-            page_content = scrape_page(link)
-            if page_content:
-                pages.append(page_content)
-        # Save zip of links and pages to a json file
-        links_pages = [{"link": link, "page": page} for link, page in zip(links, pages)]
-        with open('links_pages.json', 'w') as f:
-            json.dump(links_pages, f, indent=4)
-    
-    # vectors = embeddings_model.embed_documents(pages)
+    Returns:
+        None
+    """
 
-    # Write embeddings file
-    # embedding_manifest = []
-    # for link, vector in zip(links, vectors):
-    #     embedding_manifest.append({
-    #         "link": link,
-    #         "vector": vector
-    #     })
-    
-    # with open('embedding_manifest.json', 'w') as f:
-    #     json.dump(embedding_manifest, f, indent=4)
+    # TODO: make sure there are no duplicate sublinks... do this here or in filter_sublinks?
+    links = []
+    for site in sitemap:
+        base_url = site['url']
+        links.append(base_url)
+        for sublink in site['sublinks']:
+            # Use urljoin to properly resolve relative URLs including ../
+            full_url = urljoin(base_url + '/', sublink)
+            links.append(full_url)
+    pages = []
+    for link in tqdm(links, desc="Scraping links"):
+        page_content = scrape_page(link)
+        if page_content:
+            pages.append(page_content)
+    # Save zip of links and pages to a json file
+    links_pages = [{"link": link, "page": page} for link, page in zip(links, pages)]
+    with open('links_pages.json', 'w') as f:
+        json.dump(links_pages, f, indent=4)
     
 
 def load_sitemap():
+    """
+    Load the sitemap from a JSON file and return it as a list of dictionaries.
+
+    Returns:
+        list: A list of dictionaries containing the sitemap data with 'text', 'url', and 'sublinks' keys.
+    """
     with open('site_titles_urls.json', 'r') as f:
         sitemap = json.load(f)
     return sitemap
 
 def write_sitemap():
+    """
+    Fetch and parse department information from the UNM directory webpage and save 
+    the sitemap to a JSON file.
+
+    This function sends a request to the UNM directory page, parses the HTML to find 
+    department links, and extracts the main URL and sublinks for each department. 
+    It filters and validates URLs before writing the sitemap data to 'site_titles_urls.json'.
+
+    Returns:
+        list: A list of dictionaries containing the department names, URLs, and sublinks.
+
+    Raises:
+        requests.RequestException: If there's an error during the HTTP request.
+    """
     directory_url = "https://directory.unm.edu/departments/"
     load_dotenv()
 
@@ -147,8 +159,15 @@ def write_sitemap():
 
 
 if __name__ == "__main__":
+    # Use to generate sitemap
     # sitemap = write_sitemap()
+
+    # Once sitemap is generated, it can be loaded:
     sitemap = load_sitemap()
-    scrape_pages(sitemap, True)
+
+    # Use to scrape pages
+    scrape_pages(sitemap)
+
+    # Testing scraping:
     # test_link = "https://food.unm.edu/locations/hours/fall-2024-hours.html"
     # print(scrape_page(test_link))
