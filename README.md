@@ -3,7 +3,7 @@ LoboLine is an AI-powered application utilizing OpenAI's latest API to interact 
 
 ## Team
  ### Finn Ellis (<finnellis@unm.edu>)
-> I am a passionately inquisitve junior-level undergraduate student studying and teaching computer science. I was born and raised here in New Mexico. I've been interested in interactive simulation and game design for years. International Baccalaureate alumni.
+> I am a passionately inquisitive junior undergraduate student studying and teaching computer science. I was born and raised here in New Mexico. I've been interested in interactive simulation and game design for years. International Baccalaureate alumnus.
 
 ## Examples
 ![Example 1](/example_images/LoboLineSC1.jpg "Prompt: What is the UNM CNM App Contest?")
@@ -42,15 +42,10 @@ The LLM model is prompted to return concise results based on data and formatted 
 - BeautifulSoup4
 - *asyncio, tqdm*
 
-Include a prototype of the important screens within the application (i.e. using rapid-prototyping software such as Figma).
-Also include an architecture diagram using an application such Visio, Lucidchart, Excalidraw, etc.
-
 ## SECURITY
 Security is inherent. Prompts are anonymous and no user data is stored. All data used is publically available.
 
 ## PROTOTYPE
-Due to the high personal cost of making OpenAI API requests, please limit your requests:
-
 https://lobo-line-463950868880.us-west3.run.app/
 
 
