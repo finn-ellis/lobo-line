@@ -1,11 +1,12 @@
-
 .env
-/__pycache__
+.env.*
+__pycache__
 links_pages.json
 site_titles_urls.json
-/scripts/__pycache__
-chroma_db
 /ignore
 node_modules
 chroma.zip
 .gitignore
+data
+deploy.sh
+chroma_db

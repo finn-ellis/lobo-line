@@ -1,9 +1,8 @@
 import json
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
-from dotenv import load_dotenv
 import os
-from scripts.removebadsublinks import filter_sublinks
+from backend.removebadsublinks import filter_sublinks
 from config import OPENAI_API_KEY
 from tqdm import tqdm
 from urllib.parse import urljoin
@@ -98,7 +97,6 @@ def write_sitemap():
         requests.RequestException: If there's an error during the HTTP request.
     """
     directory_url = "https://directory.unm.edu/departments/"
-    load_dotenv()
 
     try:
         response = requests.get(directory_url, timeout=5)

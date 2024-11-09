@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
-from rag import run_query
-import uuid
+# from flask_cors import CORS
+from backend.rag import run_query
+import os
 
-app = Flask(__name__, static_folder='react-app/build/static', template_folder='react-app/build')
-CORS(app)
+app = Flask(__name__, static_folder='frontend/build/static', template_folder='frontend/build')
+# CORS(app)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -19,9 +19,13 @@ def prompt():
     print(f"Received prompt: {prompt_text} with session_id: {session_id}")
 
     # Run the query with the existing or new session_id
-    answer, id = run_query(prompt_text, session_id)
+    try:
+        print("Running query")
+        answer, id = run_query(prompt_text, session_id)
 
-    return jsonify({'answer': answer, 'session_id': id})
+        return jsonify({'answer': answer, 'session_id': id})
+    except:
+        return jsonify({'answer': "Error retrieving context database!"})
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))

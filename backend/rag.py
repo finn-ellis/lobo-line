@@ -14,12 +14,13 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from config import OPENAI_API_KEY
+from backend.config import OPENAI_API_KEY
 from datetime import datetime, timedelta
 import uuid
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-DB_PERSIST_DIR = "./chroma_db"
+DB_PERSIST_DIR = "chroma_db"
+DB_PATH = os.path.join(os.path.dirname(__file__), DB_PERSIST_DIR)
 
 async def load_documents(loader):
     docs = []
@@ -54,7 +55,7 @@ def load_db():
     vectorstore = Chroma.from_documents(
         documents=splits, 
         embedding=OpenAIEmbeddings(),
-        persist_directory=DB_PERSIST_DIR
+        persist_directory=DB_PATH
     )
     # Persist the database to disk
     vectorstore.persist()
@@ -87,16 +88,18 @@ def run_query(query, session_id):
     cleanup_old_sessions()
     llm = ChatOpenAI(model="gpt-4o-mini")
     
+    print(DB_PATH)
+    print(os.path.exists(DB_PATH))
+
     # Check if we already have a persisted database
-    if os.path.exists(DB_PERSIST_DIR):
+    if os.path.exists(DB_PATH):
         print("Loading existing db")
         vectorstore = Chroma(
-            persist_directory=DB_PERSIST_DIR,
+            persist_directory=DB_PATH,
             embedding_function=OpenAIEmbeddings()
         )
     else:
-        print("Creating new db")
-        vectorstore = load_db()
+        raise Exception("DB Directory Not Found")
 
     print("Prompting")
     retriever = vectorstore.as_retriever()
@@ -118,7 +121,7 @@ def run_query(query, session_id):
     
     qa_system_prompt = """You are an assistant for information retrieval tasks related to the University of New Mexico. \
     Your requirements for your answer are: Use the following pieces of retrieved context to respond to the prompt. \
-    Keep the answer concise. Use strictly HTML formatting in your answer. \
+    Keep the answer concise. Use strictly HTML formatting in your answer, DO NOT use markdown. \
     Include relevant links in your answer.\nContext: {context}"""
     # prompt = hub.pull("rlm/rag-prompt")
     # prompt.messages[0].prompt.template = prompt_text
