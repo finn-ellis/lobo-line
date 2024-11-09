@@ -1,5 +1,5 @@
 # LOBOLINE
-LoboLine is an AI-powered application utilizing OpenAI's latest API to interact with natural language queries & results on ~4GB of data collected from University of New Mexico web pages (data not included in repo).
+LoboLine is an AI-powered application utilizing OpenAI's latest API to interact with natural language queries about UNM and return results on ~4GB of data collected from University of New Mexico web pages (data not included in repo).
 
 ## Team
  ### Finn Ellis (<finnellis@unm.edu>)
@@ -28,7 +28,7 @@ and centralizes it so it can be interacted with via natural language. It aims to
 
 ### Pathway to Satisfaction
 LoboLine's ease of access is demonstrated by the simple text box and reply box design. This could be further simplified with a text message API.
-The LLM model is prompted to return concise results based on data and 
+The LLM model is prompted to return concise results based on data and formatted to make the answer easily readable.
 
 ## PROPOSED TECHNICAL ASPECTS
 ### APIs
