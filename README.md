@@ -1,8 +1,4 @@
 # LOBOLINE
-
-Subject "App Contest Submission – LoboLine" to appcontest@unm.edu
-https://appcontest.unm.edu/rules.html
-
 LoboLine is an AI-powered application utilizing OpenAI's latest API to interact with natural language queries & results on ~4GB of data collected from University of New Mexico web pages (data not included in repo).
 
 ## Team
@@ -18,12 +14,27 @@ LoboLine is an AI-powered application utilizing OpenAI's latest API to interact 
 # SCORING
 
 ## PURPOSE, AUDIENCE, FUNCTIONS, PATHWAY TO SATISFACTION
+### Purpose
+Provide new students with an easy, accessible tool to answer questions or grab information - a lot like a personal guide to adjusting to college life.
 
+### Audience
+LoboLine in its current form primarily benefits new students and people unfamiliar with the University of New Mexico. While it has a large database to draw from,
+information is still limited and to knowledgeable researchers, a thorough search may produce more relevant results. Artificial intelligence is largely meant to aid people,
+improve accessibility, and speed up existing tasks. LoboLine aims to do this.
+
+### Functions
+LoboLine's main function is to increase accessibility of information. People interact with information in various ways, and LoboLine collects this information
+and centralizes it so it can be interacted with via natural language. It aims to reduce time spent sorting through information and give easy questions easy answers.
+
+### Pathway to Satisfaction
+LoboLine's ease of access is demonstrated by the simple text box and reply box design. This could be further simplified with a text message API.
+The LLM model is prompted to return concise results based on data and 
 
 ## PROPOSED TECHNICAL ASPECTS
 ### APIs
 - OpenAI Text Embedding Ada 002 & GPT 4o mini
 - LangChain Prompt Hub
+- Google Cloud for hosting demo
 
 ### Libraries
 - React, *ReactDOM, styled-components, typewriter-effect*
@@ -38,13 +49,15 @@ Also include an architecture diagram using an application such Visio, Lucidchart
 Security is inherent. Prompts are anonymous and no user data is stored. All data used is publically available.
 
 ## PROTOTYPE
-Due to the high personal cost of making OpenAI API requests, please limit your requests.
+Due to the high personal cost of making OpenAI API requests, please limit your requests:
+
+https://lobo-line-463950868880.us-west3.run.app/
 
 
 # FUTURE IMPROVEMENTS
 - Re-embed data with smaller chunk sizes & overlaps with "text-embedding-3-small" instead?
--- I wonder if smaller data chunks & a higher k-value on the retriever will improve results... quantity > quality when initial quality is low?
-
+	- I wonder if smaller data chunks & a higher k-value on the retriever will improve results... quantity > quality when initial quality is low?
+- Use SMS API to allow users to text the service
 
 # Licensing
 
